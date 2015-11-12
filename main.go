@@ -60,6 +60,16 @@ func (r *Registry) addPackage(name string, pkg *Package) error {
 	return nil
 }
 
+func (r *Registry) GetPackage(name string) (string, error) {
+	r.lk.Lock()
+	defer r.lk.Unlock()
+	pkg, ok := r.pkgs[name]
+	if !ok {
+		return "", fmt.Errorf("no package by that name")
+	}
+	return pkg.Hash, nil
+}
+
 func (r *Registry) writeToDisk(fname string) error {
 	fi, err := os.Create(fname)
 	if err != nil {
@@ -189,6 +199,18 @@ func main() {
 					c.Msg(mes.To, err.Error())
 				} else {
 					c.Msg(mes.To, "success!")
+				}
+
+			case "get":
+				if len(parts) != 3 {
+					return true
+				}
+
+				h, err := r.GetPackage(parts[2])
+				if err != nil {
+					c.Msg(mes.To, err.Error())
+				} else {
+					c.Msg(mes.To, h)
 				}
 
 			default:
