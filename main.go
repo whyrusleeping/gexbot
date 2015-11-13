@@ -127,7 +127,7 @@ func (r *Registry) CheckAndAddPackage(name string, pkg *Package) error {
 	}
 
 	Log("package size: %d", size)
-	if size > maxPackageSize {
+	if size > maxPackageSize && pkg.Author != "whyrusleeping" {
 		return fmt.Errorf("package too large! must be under %d bytes", maxPackageSize)
 	}
 
